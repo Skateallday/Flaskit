@@ -1,5 +1,6 @@
-CREATE TABLE accounts(
-    username text,
-    email text,
-    password text)
-    
+drop table if exists users;
+    create table users (
+    id integer primary key autoincrement,
+    username text not null,
+    password text not null
+);
