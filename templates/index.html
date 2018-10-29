@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<title>Instaslam</title>
+
+</head>
+
+<body>
+<div class="container">
+<div class="row">
+  <div class="col-lg-3"></div>
+  <div class="col-lg-3"><h1>INSTASLAM</h1></div>
+  <div class="col-lg-3"><a href={{url_for('signup')}} class="btn btn-link" id="signup">Sign up!</a></div>
+</div>
+
+<div class="row">
+  <div class="col-lg-4"></div>
+  <div class="col-lg-4">
+    <form method='POST' action='/homepage/' class="group-form">
+      <label>Username</label>
+      <input type="text" name="username" id="username" class="form-control" aria-describedby="username" placeholder="Username">
+      <label>Password</label>
+      <input type="password" name="password" id="password" class="form-control" aria-describedby="password" placeholder="password">
+      
+  </div>
+  <div class="col-lg-4"></div>
+</div>
+
+<div class="row">
+  <div class="col-lg-4"></div>
+  <div class="col-lg-4"><button  type="submit" class="btn btn-primary" id="start">Sign in</button></div></form>
+  <div class="col-lg-4"></div>
+</div>
+</div>
+</body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+</html>
