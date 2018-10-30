@@ -13,8 +13,7 @@ def homepage():
         if request.method=='POST':
                 username = request.form['username']
                 password = request.form['password']
-                dbHandler.insertUser(username, password)
-                users = dbHandler.retrieveUsers()
+                users = dbHandler.retrieveUsers(username,password)
                 return render_template('homepage.html', users=users)
         else:
                 return render_template("index.html" )
