@@ -11,22 +11,22 @@
 <div class="container">
 <div class="row">
   <div class="col-lg-4"></div>
-  <div class="col-lg-3">
-    <img src={{ url_for('static', filename='logo1.png')}}></div>
+  <div class="col-lg-3"><a href={{url_for('index')}}><img src={{url_for('static', filename="logo1.png")}}></a></div>
   <div class="col-lg-5"><a href={{url_for('index')}} class="btn btn-link" id="signip">Sign in!</a></div>
 </div>
 
+<form method='POST' action='/register/' class="group-form">
 <div class="row">
   <div class="col-lg-4"></div>
   <div class="col-lg-4">
-    <form method='POST' action='/newaccount/' class="group-form">
-    <label for="exampleInputEmail1">Email address</label>
-    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+    
+    <label for="InputEmail">Email address</label>
+    <input type="email" class="form-control" id="InputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
       <label>Username</label>
-      <input type="text" name="username" id="username" class="form-control" aria-describedby="username" placeholder="Username">
+      <input type="text" name="signupUsername" id="signupUsername" class="form-control" aria-describedby="signupUsername" placeholder="Username">
       <label>Password</label>
-      <input type="password" name="password" id="password" class="form-control" aria-describedby="password" placeholder="password">
-      </form>
+      <input type="password" name="signupPassword" id="signupPassword" class="form-control" aria-describedby="signupPassword" placeholder="password">
+      
   </div>
   <div class="col-lg-4"></div>
 </div>
@@ -35,7 +35,7 @@
   <div class="col-lg-4"><br></div>
   <div class="col-lg-4"><button type="submit" class="btn btn-primary" id="start">Join the fun</button></div>
   <div class="col-lg-4"></div>
-</div>
+</div></form>
 </div>
 </body>
 
