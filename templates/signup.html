@@ -12,20 +12,19 @@
 <div class="row">
   <div class="col-lg-4"></div>
   <div class="col-lg-3"><a href={{url_for('index')}}><img src={{url_for('static', filename="logo1.png")}}></a></div>
-  <div class="col-lg-5"><a href={{url_for('index')}} class="btn btn-link" id="signip">Sign in!</a></div>
+  <div class="col-lg-5"><a href={{url_for('login')}} class="btn btn-link" id="signip">Sign in!</a></div>
 </div>
 
-<form method='POST' action='/register/' class="group-form">
+<form method='post' action='/register/' class="group-form">
 <div class="row">
   <div class="col-lg-4"></div>
   <div class="col-lg-4">
     
-    <label for="InputEmail">Email address</label>
-    <input type="email" class="form-control" id="InputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+    
       <label>Username</label>
-      <input type="text" name="signupUsername" id="signupUsername" class="form-control" aria-describedby="signupUsername" placeholder="Username">
+      <input type="text" name="signupUsername" id="signupUsername" value="{{ request.form.signupUsername }}" class="form-control" aria-describedby="signupUsername" placeholder="Username">
       <label>Password</label>
-      <input type="password" name="signupPassword" id="signupPassword" class="form-control" aria-describedby="signupPassword" placeholder="password">
+      <input type="password" name="signupPassword" id="signupPassword" value="{{ request.form.signupPassword }}" class="form-control" aria-describedby="signupPassword" placeholder="password">
       
   </div>
   <div class="col-lg-4"></div>
