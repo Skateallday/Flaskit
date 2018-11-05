@@ -31,7 +31,7 @@ def validate(username, password):
     return completion
 
 
-@app.route('/')
+@app.route('/',  methods=['GET', 'POST'])
 def index():
     error = None
     if request.method == 'POST':
@@ -41,8 +41,12 @@ def index():
         if completion ==False:
                 error = 'Invalid Input, try again!'
         else:
-                return redirect(url_for('homepage'))
+                return redirect(url_for('secert'))
         return render_template("index.html", error=error)
+
+@app.route('/secret')
+def secret():
+    return "You have successfully logged in"
 
 @app.route('/signup/')
 def signup():
