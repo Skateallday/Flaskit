@@ -22,7 +22,14 @@ def homepage():
 
 
 
+@app.route('/upload/')
+def upload():
+        return render_template("upload.html")
 
+
+@app.route('/profile/')
+def profile():
+        return render_template("profile.html")
 
 @app.route('/')
 def index():
