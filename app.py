@@ -1,59 +1,48 @@
-from flask import Flask, render_template, request, Response, url_for, session, abort
-from flask_login import LoginManager , login_required , UserMixin , login_user
+from flask import Flask, render_template, request, redirect, Response, url_for, session, abort
+import sqlite3
 import models as dbHandler
+import hashlib
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret_key'
-login_manager = LoginManager()
-login_manager.login_view = "index"
-login_manager.init_app(app)
-
-class User(UserMixin):
-    def __init__(self , username , password , id , active=True):
-        self.id = id
-        self.username = username
-        self.password = password
-        self.active = active
-
-    def get_id(self):
-        return self.id
-
-    def is_active(self):
-        return self.active
-
-    def get_auth_token(self):
-        return make_secure_token(self.username , key='secret_key')
-
-
-class UsersRepository:
-
-    def __init__(self):
-        self.users = dict()
-        self.users_id_dict = dict()
-        self.identifier = 0
-    
-    def save_user(self, user):
-        self.users_id_dict.setdefault(user.id, user)
-        self.users.setdefault(user.username, user)
-    
-    def get_user(self, username):
-        return self.users.get(username)
-    
-    def get_user_by_id(self, userid):
-        return self.users_id_dict.get(userid)
-    
-    def next_index(self):
-        self.identifier +=1
-        return self.identifier
-
-users_repository = UsersRepository()
 
 
 # config
 UPLOAD_FOLDER = '/static/uploads/'
 ALLOW_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
+def check_password(hashed_password, user_password):
+    return hashed_password == hashlib.md5(user_password.encode()).hexdigest()
+
+def validate(username, password):
+    con = sqlite3.connect('var/Flaskit.db')
+    completion = False
+    with con:
+                cur = con.cursor()
+                cur.execute("SELECT * FROM users")
+                rows = cur.fetchall()
+                for row in rows:
+                    dbUser = row[0]
+                    dbPass = row[1]
+                    if dbUser==username:
+                        completion=check_password(dbPass, password)
+    return completion
+
+
+@app.route('/')
+def index():
+    error = None
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        completion = validate(username, password)
+        if completion ==False:
+                error = 'Invalid Input, try again!'
+        else:
+                return redirect(url_for('homepage'))
+        return render_template("index.html", error=error)
 
 @app.route('/signup/')
 def signup():
@@ -75,10 +64,9 @@ def notifications():
 
 
 
-@app.route('/homepage/'<string:username>, methods=['POST', 'GET'])
-@login_required
-def homepage(username):
-        return render_template("homepage.html", username=username)
+@app.route('/homepage/')
+def homepage():
+        return render_template("homepage.html")
 
 
 @app.route('/upload/', methods=['GET', 'POST'])
@@ -91,36 +79,7 @@ def upload():
 def profile():
         return render_template("profile.html")
 
-@app.route('/')
-def index():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        print('username')
-        registeredUser = users_repository.get_user(username)
-        print('Users '+ str(users_repository.users))
-        print('Register user %s , password %s' % (registeredUser.username, registeredUser.password))
-        if registeredUser != None and registeredUser.password == password:
-            print('Logged in..')
-            login_user(registeredUser)
-            return redirect(url_for('homepage', username=marc))
-        else:
-            return abort(401)
-    else:
-       
-        return render_template("index.html")
 
-
-
-# handle login failed
-@app.errorhandler(401)
-def page_not_found(e):
-    return Response('<p>Login failed</p>')
-
-# callback to reload the user object        
-@login_manager.user_loader
-def load_user(userid):
-    return users_repository.get_user_by_id(userid)
 
 if __name__ == '__main__':
         app.run(debug=True)
