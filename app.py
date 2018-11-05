@@ -1,8 +1,14 @@
-from flask import Flask, render_template, request, url_for
+from flask import Flask, render_template, request, url_for, session, abort
 import models as dbHandler
-
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
+
+# config
+UPLOAD_FOLDER = '/static/uploads/'
+ALLOW_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 
 @app.route('/signup/')
 def signup():
@@ -10,21 +16,14 @@ def signup():
 
 @app.route('/homepage/', methods=['POST', 'GET'])
 def homepage():
-        logo = url_for('static', filename='logo.png')
-        if request.method=='POST':
-                username = request.form['username']
-                password = request.form['password']
-                dbHandler.retrieveUsers(username, password)
-                users = dbHandler.retrieveUsers(username,password)
-                return render_template('homepage.html', logo=logo, users=users)
-        else:
-                return render_template("index.html" )
+        with open:(file_path, 'flasklogin.py')
+        return render_template("homepage.html")
 
 
-
-@app.route('/upload/')
+@app.route('/upload/', methods=['GET', 'POST'])
 def upload():
         return render_template("upload.html")
+        
 
 
 @app.route('/profile/')
@@ -34,6 +33,7 @@ def profile():
 @app.route('/')
 def index():
         return render_template("index.html")
+
 
 if __name__ == '__main__':
         app.run(debug=True)
