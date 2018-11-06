@@ -40,31 +40,37 @@ def validate(username, password):
 def login():
         error = None
         if request.method == 'POST':
-                session.pop('username', None)
-                session['logged_in'] = False
-                session['username'] = request.form['username']
-                username = str(request.form['username'])
-                password = str(request.form['password'])
                 
+                username = request.form['username']
+                password = request.form['password']
                 
                 con = sqlite3.connect('static/User.db')
                 completion = False
                 with con:
                         c = con.cursor()
-                        try:
-                                sql1 = '''SELECT * FROM USERS WHERE USERNAME=? '''
-                                sql2 = '''SELECT * FROM USERS WHERE PASSWORD=? '''
-                                c.execute(sql1, ['username'])
-                                c.execute(sql2, ['password'])
-                        except sqlite3.IntegrityError as e:
-                                print('wrong?')
-                                error = 'These details are incorrect, please try again!'
-                                return render_template("login.html", error=error)
-                                con.commit()
-                        return redirect(url_for('homepage'))
-        
-                error = 'Invalid Credentials. Please try again.'
+                        
+                        find_user = ("SELECT * FROM USERS WHERE USERNAME = ? AND PASSWORD =? ")
+                        c.execute(find_user, [(username), (password)])
+                        results = c.fetchall()
+
+                        if results:
+                                session['logged_in'] = True
+                                session['username'] = username
+                                return redirect(url_for('homepage'))
+                        else:
+                                error=("username and password not recognised")
+                                return render_template('login.html', error=error)
+                        print("username and password not recognised")
+                        return render_template('login.html', error=error)
+                print("username and password not recognised")
+                return render_template('login.html', error=error)
+        print("username and password not recognised")
         return render_template('login.html', error=error)
+                                
+                                
+                
+        
+        
 
 
 
@@ -112,24 +118,39 @@ def register():
 
 @app.route('/notifications/')
 def notifications():
+        error = None
         if g.username:
                 username=g.username
-        return render_template("notifications.html", username=g.username)
+                
+                return render_template("notifications.html", username=g.username)
+        else:   
+                error = 'Please sign in before accessing this page!'
+                return render_template('index.html', error=error)
 
 
 
 @app.route('/homepage/')
 def homepage():
+        error = None
         if g.username:
                 username=g.username
-        return render_template("homepage.html", username=g.username)
+                
+                return render_template("homepage.html", username=g.username)
+        else:   
+                error = 'Please sign in before accessing this page!'
+                return render_template('index.html', error=error)
 
 
 @app.route('/upload/', methods=['GET', 'POST'])
 def upload():
+        error = None
         if g.username:
                 username=g.username
-        return render_template("upload.html", username=g.username)
+                
+                return render_template("upload.html", username=g.username)
+        else:   
+                error = 'Please sign in before accessing this page!'
+                return render_template('index.html', error=error)
 
 @app.route("/logout")
 def logout():
@@ -142,10 +163,14 @@ def logout():
 
 @app.route('/profile/')
 def profile():
+        error = None
         if g.username:
                 username=g.username
-        
-        return render_template("profile.html", username=g.username)
+                
+                return render_template("profile.html", username=g.username)
+        else:   
+                error = 'Please sign in before accessing this page!'
+                return render_template('index.html', error=error)
 
 
 
