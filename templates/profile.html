@@ -14,18 +14,18 @@
         <div class="col-lg-3"><a href={{url_for('index')}}><img src={{url_for('static', filename="logo1.png")}}></a></div>
       </div>
       <div class="col-lg-6">
-            <a href={{url_for('profile')}}>profile pic here</a>
+            <a href={{url_for('profile')}}>{{username}} pic here</a>
           </div>
     </div>
     <div class="row">
       <div class="col-lg-9">
-        <h1>This is your profile!</h1>
+        <h1>Profile for {{username}}</h1>
       </div>
 
     </div>
     <div class="row">
       <div class="col-lg-12">
-        
+        <a href={{url_for('logout')}}>Logout</a>
       </div>
     </div>
     <div class="row">
