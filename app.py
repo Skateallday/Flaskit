@@ -144,7 +144,7 @@ def homepage():
 @app.route('/upload/', methods=['GET', 'POST'])
 def upload():
         error = None
-        success = None
+        
         if g.username:
                 username=g.username
                 
@@ -152,22 +152,7 @@ def upload():
         else:   
                 error = 'Please sign in before accessing this page!'
                 return render_template('index.html', error=error)
-        if request.method=="POST":
-                #Check that the post request has the right file part
-                if 'file' not in request.files:
-                        flash('No file part!')
-                        return redirect('upload')
-                file = request/files['file']
-                #if user does not select file, brower also submit an empty part without filename
-                if file.filename == '':
-                        flash('No selected file ')
-                        return redirect('upload')
-                if file and allowed_file(file.filename):
-                        filename = secure_filename(file.filename)
-                        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                        return redirect(url_for('upload', filename=filename))
-                success='Image Uploaded successful!'
-                return render_template('upload.html', success=success)
+        
 
 
 @app.route("/logout")
@@ -182,11 +167,11 @@ def logout():
 @app.route('/profile/')
 def profile():
         error = None
-        profile_pic= None
+        img_url= None
         if g.username:
                 username=g.username
-                profile_pic = url_for('static', filename= username+'.jpg')
-                return render_template("profile.html", profile_pic=profile_pic, username=g.username)
+                img_url = url_for('static', filename= username+'.jpg')
+                return render_template("profile.html", img_url=img_url, username=g.username)
         else:   
                 error = 'Please sign in before accessing this page!'
                 return render_template('index.html', error=error)
