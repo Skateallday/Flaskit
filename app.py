@@ -185,7 +185,7 @@ def profile():
         profile_pic= None
         if g.username:
                 username=g.username
-                profile_pic = url_for('static/uploads/skateallday.jpg')
+                profile_pic = url_for('static', filename= username+'.jpg')
                 return render_template("profile.html", profile_pic=profile_pic, username=g.username)
         else:   
                 error = 'Please sign in before accessing this page!'
