@@ -11,11 +11,14 @@
 <body>
   <div class="container">
     <div class="row">
-        <div class="col-lg-3"><a href={{url_for('index')}}><img src={{url_for('static', filename="logo1.png")}}></a></div>
-      </div>
+        <div class="col-lg-3"><a href={{url_for('index')}}><img src={{url_for('static', filename="textlogo.png")}}></a></div>
+      
       <div class="col-lg-6">
             <a href={{url_for('profile')}}>profile pic here</a>
           </div>
+    </div>
+    <div class="col-lg-12">
+      <a href={{url_for('logout')}}>Logout</a>
     </div>
     <div class="row">
       <div class="col-lg-9">
@@ -32,25 +35,22 @@
       </div>
     </div>
     <div class="row">
-        <div class="col-lg-8">
-            <form method='POST' action='/homepage/' class="group-form">
-                <label>Image titles</label>
-                <input type="text" name="imgtitle" id="imgtitle" class="form-control" aria-describedby="imgtitle" placeholder="Image title">
-                
-            </div>
-            <div class="col-lg-4">
-                    <form method=post enctype=multipart/form-data>
+        <div class="col-lg-4">
+                    <form method=post action='' enctype=multipart/form-data>
                             <div class="form-group">
+                              <label>Image titles</label>
+                              <input type="text" name="imgtitle" id="imgtitle" class="form-control" aria-describedby="imgtitle" placeholder="Image title">
                               <label for="imgTitle">Image Upload</label>
                               <input type="file" class="form-control-file" id="imgTitle">
-                            </div>
+                              
+            <div class="col-lg-4"><button  type="submit" class="btn btn-primary" id="upload">Upload</button></div>
+                            </div></form>
                           
             </div>
           </div>
           
           <div class="row">
-            <div class="col-lg-4"><br></div>
-            <div class="col-lg-4"><button  type="submit" class="btn btn-primary" id="upload">Upload</button></div></form>
+            <div class="col-lg-4">{{success}}</div>
     </div>
     <div class="row">
       
