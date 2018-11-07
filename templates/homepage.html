@@ -3,6 +3,8 @@
 
 <head>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  
+  <script charset="utf-8" src="https://ucarecdn.com/libs/widget/3.6.1/uploadcare.full.min.js"></script>
 
   <title>Instaslam</title>
 
@@ -47,7 +49,7 @@
                     <a class="nav-link" href={{url_for('homepage')}}>Homepage</a>
                   </li>
                   <li class="nav-item">
-                    <a href={{url_for('upload')}}>Upload<span class="sr-only">(current)</span></a>
+                    <input type="hidden" role="uploadcare-uploader" name="content" data-public-key="2d775a81c095ee771926" data-images-only />
                   </li>
                   <li class="nav-item">
                       <a href={{url_for('notifications')}}>Notifications<span class="badge">4</span></a>
