@@ -1,10 +1,9 @@
 from flask import Flask, render_template, request, redirect, Response, url_for, session, abort, g
-
+from flask_uploads import UploadSet, configure_uploads, IMAGES
 import sqlite3
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import models as dbHandler
 import hashlib
 from werkzeug.utils import secure_filename
 
@@ -12,11 +11,9 @@ app = Flask(__name__)
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SECRET_KEY'] = os.urandom(24)
 
-# config
-UPLOAD_FOLDER = '/static/uploads/'
-ALLOW_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
+photos = UploadSet('photos')
+app.config['UPLOADED_PHOTOS_DEST']= 'static'
+configure_uploads(app, photos)
 
 def check_password(hashed_password, user_password):
     return hashed_password == hashlib.md5(user_password.encode()).hexdigest()
@@ -26,7 +23,7 @@ def validate(username, password):
     completion = False
     with con:
                 cur = con.cursor()
-                cur.execute("SELECT * FROM Users")
+                cur.execute("SELECT * FROM USER")
                 rows = cur.fetchall()
                 for row in rows:
                     dbUser = row[0]
@@ -49,7 +46,7 @@ def login():
                 with con:
                         c = con.cursor()
                         
-                        find_user = ("SELECT * FROM USERS WHERE USERNAME = ? AND PASSWORD =? ")
+                        find_user = ("SELECT * FROM USER WHERE USERNAME = ? AND PASSWORD =? ")
                         c.execute(find_user, [(username), (password)])
                         results = c.fetchall()
 
@@ -66,13 +63,6 @@ def login():
                 return render_template('login.html', error=error)
         print("username and password not recognised")
         return render_template('login.html', error=error)
-                                
-                                
-                
-        
-        
-
-
 
 @app.route('/')
 def index():
@@ -96,18 +86,21 @@ def signup():
 @app.route('/register/', methods=['GET', 'POST'])
 def register():
         error = None
-        if request.method == 'POST':
+        if request.method == 'POST' and 'profilephoto' in request.files:
+
                 signupUsername = request.form['signupUsername']
                 signupPassword = request.form['signupPassword']
-                newEntry = [
-                        (signupUsername, signupPassword)
-                ]                
+                signupEmail = request.form['signupEmail']
+                filename= photos.save(request.files['profilephoto'], 'profile', signupUsername+'.jpg')
+
+                newEntry = [(signupUsername, signupPassword, signupEmail)]
+              
                 con = sqlite3.connect('static/User.db')
                 completion = False
                 with con:
                         c = con.cursor()
                         try:
-                                sql = '''INSERT INTO USERS (USERNAME, PASSWORD) VALUES(?, ?) '''
+                                sql = '''INSERT INTO USER (username, password, email ) VALUES(?, ?, ?) '''
                                 c.executemany(sql, newEntry)
                         except sqlite3.IntegrityError as e:
                                 error = 'This is already an account, please try again!'
@@ -121,21 +114,33 @@ def notifications():
         error = None
         if g.username:
                 username=g.username
-                
-                return render_template("notifications.html", username=g.username)
+                img_url = url_for('static', filename= 'profile/' + username+'.jpg')
+                return render_template("notifications.html", img_url=img_url, username=g.username)
         else:   
                 error = 'Please sign in before accessing this page!'
                 return render_template('index.html', error=error)
 
 
 
+@app.route('/search/', methods=['GET', 'POST'])
+def search():
+        error = None
+        if g.username:
+                username=g.username
+                
+                img_url = url_for('static', filename= 'profile/' + username+'.jpg')
+                return render_template("search.html", img_url=img_url,  username=g.username)
+        else:   
+                error = 'Please sign in before accessing this page!'
+                return render_template('index.html', error=error)
+
 @app.route('/homepage/', methods=['GET', 'POST'])
 def homepage():
         error = None
         if g.username:
                 username=g.username
-                
-                return render_template("homepage.html", username=g.username)
+                img_url = url_for('static', filename= 'profile/' + username+'.jpg')
+                return render_template("homepage.html", img_url=img_url, username=g.username)
         else:   
                 error = 'Please sign in before accessing this page!'
                 return render_template('index.html', error=error)
@@ -170,7 +175,7 @@ def profile():
         img_url= None
         if g.username:
                 username=g.username
-                img_url = url_for('static', filename= username+'.jpg')
+                img_url = url_for('static', filename= 'profile/' + username+'.jpg')
                 return render_template("profile.html", img_url=img_url, username=g.username)
         else:   
                 error = 'Please sign in before accessing this page!'

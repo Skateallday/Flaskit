@@ -2,19 +2,39 @@
 <html>
 
 <head>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
-  <title>Editer Instaslam</title>
+  <link rel="stylesheet" href="../static/stlyes.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script>
+  UPLOADCARE_PUBLIC_KEY = '2d775a81c095ee771926';
+  UPLOADCARE_EFFECTS = 'crop,rotate,mirror,flip,enhance,sharp,blur,grayscale,invert';
+  UPLOADCARE_IMAGES_ONLY = true;
+</script>
+
+<script src="https://ucarecdn.com/libs/widget/3.6.1/uploadcare.full.min.js"></script><script src="https://ucarecdn.com/libs/widget-tab-effects/1.x/uploadcare.tab-effects.js"></script>
+<script>
+  uploadcare.registerTab('preview', uploadcareTabEffects)
+</script>
+  <title>Profile Instaslam</title>
+<style>
+.profilePic{
+    height:180px;
+    width:180px;
+    border-radius: 100px;
+
+
+}
+</style>
 
 </head>
 
 <body>
   <div class="container">
     <div class="row">
-        <div class="col-lg-3"><a href={{url_for('index')}}><img src={{url_for('static', filename="textlogo.png")}}></a></div>
+        <div class="col-lg-6"><a href={{url_for('index')}}><img src={{url_for('static', filename="textlogo.png")}}></a></div>
       
       <div class="col-lg-6">
-            <a href={{url_for('profile')}}>{{img_url}}</a>
+            <a href={{url_for('profile')}}><img class="profilePic" src="{{img_url}}"></a>
           </div>
     </div>
     <div class="row">
@@ -31,7 +51,6 @@
     <div class="row">
     
       <nav class="navbar navbar-inverse">
-          <div class="container">
             
             
               <ul class="nav navbar-nav">
@@ -40,8 +59,15 @@
                   <a class="nav-link" href={{url_for('homepage')}}>Homepage</a>
                 </li>
                 <li class="nav-item">
-                  <a href={{url_for('upload')}}>Upload<span class="sr-only">(current)</span></a>
+                
+                  <a class="nav-brand" href={{url_for('search')}}>Search</a>
                 </li>
+                <li class="nav-item"><input
+  type="hidden"
+  role="uploadcare-uploader"
+  name="content"
+  data-crop="free" />
+                  </li>
                 <li class="nav-item">
                     <a href={{url_for('notifications')}}>Notifications<span class="badge">4</span></a>
                   </li>

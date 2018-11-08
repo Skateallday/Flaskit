@@ -15,17 +15,22 @@
   <div class="col-lg-5"><a href={{url_for('login')}} class="btn btn-link" id="signip">Sign in!</a></div>
 </div>
 
-<form method='post' action='/register/' class="group-form">
+<form method='post' action='/register/' enctype=multipart/form-data action="{{ url_for('upload') }}" class="group-form">
 <div class="row">
   <div class="col-lg-4"></div>
   <div class="col-lg-4">
     
     
-      <label>Username</label>
+      <label>Username*</label>
       <input type="text" name="signupUsername" id="signupUsername" value="{{ request.form.signupUsername }}" class="form-control" aria-describedby="signupUsername" placeholder="Username">
-      <label>Password</label>
+      <label>Password*</label>
       <input type="password" name="signupPassword" id="signupPassword" value="{{ request.form.signupPassword }}" class="form-control" aria-describedby="signupPassword" placeholder="password">
+      <label>Email</label>
+      <input type="email" name="signupEmail" id="signupEmail" value="{{ request.form.signupEmail }}" class="form-control" aria-describedby="signupEmail" placeholder="Email">
+      <label>Profile Picture</label>
+      <input type="file" name="profilephoto">
       
+      <p>*Required fields</p>
   </div>
   <div class="col-lg-4"></div>
 </div>
