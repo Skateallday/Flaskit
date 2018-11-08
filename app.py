@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, Response, url_for, 
 from flask_uploads import UploadSet, configure_uploads, IMAGES
 import sqlite3
 import os
+from forms import UserSearchForm
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import hashlib
@@ -125,11 +126,54 @@ def notifications():
 @app.route('/search/', methods=['GET', 'POST'])
 def search():
         error = None
+        
         if g.username:
                 username=g.username
-                
+                search = UserSearchForm(request.form)
+                if request.method == 'POST':
+                        img_url = url_for('static', filename= 'profile/' + username+'.jpg')
+                        return render_template('searchResults.html', img_url=img_url, form=search,  username=g.username)
+        else:   
+                error = 'Please sign in before accessing this page!'
+                return render_template('index.html', error=error)
+
+        img_url = url_for('static', filename= 'profile/' + username+'.jpg')
+        return render_template('search.html', form=search, img_url=img_url, error=error)
+
+@app.route('/searchResults', methods=['GET', 'POST'])
+def results():
+        results= []
+        search_string = search.data['search']
+        if g.username:
+                username=g.username
+                if search.data['search'] == '':
+                        qry = db_session.query(username)
+                        results = qry.all()
+                if not results:
+                        error('No results found!')
+                        return redirect(url_for('search'), results=results, search=search)
+                else:
+                        
+                        img_url = url_for('static', filename= 'profile/' + username+'.jpg')
+                        return render_template('searchResults', img_url=img_url, results=results)
+                error('No results found!')
                 img_url = url_for('static', filename= 'profile/' + username+'.jpg')
-                return render_template("search.html", img_url=img_url,  username=g.username)
+                return render_template('search.html', img_url=img_url, error=error)
+        error('No results found!')
+        img_url = url_for('static', filename= 'profile/' + username+'.jpg')
+        return render_template('search.html', img_url=img_url, error=error)
+
+
+        
+
+
+@app.route('/searchUsers/', methods=['GET', 'POST'])
+def searchUsers():
+        error = None
+        if g.username:
+                username=g.username
+                img_url = url_for('static', filename= 'profile/' + username+'.jpg')
+                return render_template("searchUsers.html", img_url=img_url, username=g.username)
         else:   
                 error = 'Please sign in before accessing this page!'
                 return render_template('index.html', error=error)
