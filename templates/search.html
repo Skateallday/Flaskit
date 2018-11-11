@@ -42,27 +42,11 @@
     </div>
     <div class="row">
     <div class="col-12-lg">
-    {% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <ul class=flashes>
-    {% for message in messages %}
-      <li>{{ message }}</li>
-    {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
-    
-    
-    
-    {% from "_formhelpers.html" import render_field%}
-    
-    <form method=post>
-    <dl>
-      <p>
-      {{ render_field(form.search) }}
-    </dl>
-    <p><input type=submit value=Search>
-    </form>
+        <div class="active-cyan-3 active-cyan-4 mb-4">
+            <form method= 'post' action=''>
+          <input class="form-control"  type="text" placeholder="Search" name="search" aria-label="Search">
+          </form>
+
 </div>
     </div>{{error}}
     </div>

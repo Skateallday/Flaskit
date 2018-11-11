@@ -79,6 +79,8 @@ def before_request():
         g.username = None
         if 'username' in session:
                 g.username = session['username']
+        if 'search' in session:
+                g.search = session['search']
 
 @app.route('/signup/')
 def signup():
@@ -131,8 +133,9 @@ def search():
                 username=g.username
                 search = UserSearchForm(request.form)
                 if request.method == 'POST':
-                        img_url = url_for('static', filename= 'profile/' + username+'.jpg')
-                        return render_template('searchResults.html', img_url=img_url, form=search,  username=g.username)
+                        return searchResults(search)
+                img_url = url_for('static', filename= 'profile/' + username+'.jpg')
+                return render_template('searchResults.html', img_url=img_url, form=search,  username=g.username)
         else:   
                 error = 'Please sign in before accessing this page!'
                 return render_template('index.html', error=error)
@@ -140,26 +143,53 @@ def search():
         img_url = url_for('static', filename= 'profile/' + username+'.jpg')
         return render_template('search.html', form=search, img_url=img_url, error=error)
 
-@app.route('/searchResults', methods=['GET', 'POST'])
-def results():
+@app.route('/searchResults/', methods=['GET', 'POST'])
+def searchResults(search):
+        error = None
+        search_img = None
         results= []
         search_string = search.data['search']
         if g.username:
                 username=g.username
-                if search.data['search'] == '':
-                        qry = db_session.query(username)
-                        results = qry.all()
-                if not results:
-                        error('No results found!')
-                        return redirect(url_for('search'), results=results, search=search)
-                else:
+                if request.method == 'POST':
                         
+                        
+                        con = sqlite3.connect('static/User.db')
+                        completion = False
+                        with con:
+                                c = con.cursor()
+                                
+                                find_user = ("SELECT * FROM USER WHERE USERNAME LIKE (?)")
+                                c.execute(find_user, [(search_string)])
+                                results = c.fetchall()
+
+                                for i in results:
+                                        session['search']=search_string
+                                        print(i)
+                                        search_img = url_for('static', filename= 'profile/' + search_string+'.jpg')
+                                        img_url = url_for('static', filename= 'profile/' + username+'.jpg')
+                                        return render_template("results.html", search=search, search_img=search_img, i=i, img_url=img_url, username=g.username)
+                                        
+                                        
+                                
+                                if not results:
+                                        error= 'No results found!'
+                                        img_url = url_for('static', filename= 'profile/' + username+'.jpg')
+                                        return render_template('search.html', error=error, img_url=img_url, search=search)
+                                else:
+                                        
+                                        img_url = url_for('static', filename= 'profile/' + username+'.jpg')
+                                        return render_template('searchResults.html', img_url=img_url, results=results)
+                                error= 'No results found!'
+                                img_url = url_for('static', filename= 'profile/' + username+'.jpg')
+                                return render_template('search.html', img_url=img_url, error=error)
+                        error= 'No results found!'
                         img_url = url_for('static', filename= 'profile/' + username+'.jpg')
-                        return render_template('searchResults', img_url=img_url, results=results)
-                error('No results found!')
+                        return render_template('search.html', img_url=img_url, error=error)
+                error= 'No results found!'
                 img_url = url_for('static', filename= 'profile/' + username+'.jpg')
                 return render_template('search.html', img_url=img_url, error=error)
-        error('No results found!')
+        error= 'No results found!'
         img_url = url_for('static', filename= 'profile/' + username+'.jpg')
         return render_template('search.html', img_url=img_url, error=error)
 
@@ -213,6 +243,18 @@ def logout():
         return render_template("index.html", message=message)
 
 
+@app.route('/results/')
+def results():
+        error = None
+        img_url= None
+        if g.username:
+                username=g.username
+                img_url = url_for('static', filename= 'profile/' + username+'.jpg')
+                return render_template("results.html", img_url=img_url, username=g.username)
+        else:   
+                error = 'Please sign in before accessing this page!'
+                return render_template('index.html', error=error)
+
 @app.route('/profile/')
 def profile():
         error = None
@@ -225,7 +267,24 @@ def profile():
                 error = 'Please sign in before accessing this page!'
                 return render_template('index.html', error=error)
        
-
+@app.route('/searchProfile/')
+def searchProfile():
+        error = None
+        img_url= None
+        search_url = None
+        if g.username:
+                if g.search:
+                        username=g.username
+                        search=g.search
+                        search_url = url_for('static', filename= 'profile/' + search +'.jpg')
+                        img_url = url_for('static', filename= 'profile/' + username+'.jpg')
+                        return render_template("searchProfile.html", search_url=search_url, img_url=img_url, search=search, username=g.username)
+                else:   
+                        error = 'Please sign in before accessing this page!'
+                        return render_template('index.html', error=error)
+        error = 'Please sign in before accessing this page!'
+        return render_template('index.html', error=error)
+       
 
 
 if __name__ == '__main__':
