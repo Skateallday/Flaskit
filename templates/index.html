@@ -1,37 +1,40 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <link rel="stylesheet" href="../static/stlyes.css">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
-<title>Instaslam</title>
+  <title>Instaslam</title>
 
 </head>
 
 
 <body>
   <div class="container">
-  <div class="row">
-    <div class="col-lg-3"></div>
-    <div class="col-lg-4"><a href={{url_for('index')}}><img src={{url_for('static', filename="indexlogo.png")}}></a></div>
-    <div class="col-lg-4"></div>
-  </div>
-  <center>
-  <div class="row">
-    <div class="col-lg-4"></div>
-    <div class="col-lg-4"><a href={{url_for('login')}} class="btn btn-primary" id="signup">login!</a></div>
-     
-    <div class="col-lg-4"></div>
-  </div><br>
-  <div class="row">
-    <div class="col-lg-4"></div>
-    <div class="col-lg-4"><a href={{url_for('signup')}} class="btn btn-link" id="signup">Dont have a login? Click here!</a></div>
-     
-    <div class="col-lg-4"></div>
-  </div></center>
-  {% if error %}
-          <p class="error"><strong>Error:</strong> {{ error }}
-        {% endif %}
+    <div class="row">
+      <div class="col-lg-3"></div>
+      <div class="col-lg-4"><a href={{url_for('index')}}><img src={{url_for('static', filename="indexlogo.png")}}></a></div>
+      <div class="col-lg-4"></div>
+    </div>
+    <center>
+      <div class="row">
+        <div class="col-lg-4"></div>
+        <div class="col-lg-4"><a href={{url_for('login')}} class="btn btn-primary" id="signup">login!</a></div>
+
+        <div class="col-lg-4"></div>
+      </div><br>
+      <div class="row">
+        <div class="col-lg-4"></div>
+        <div class="col-lg-4"><a href={{url_for('signup')}} class="btn btn-link" id="signup">Dont have a login? Click
+            here!</a></div>
+
+        <div class="col-lg-4"></div>
+      </div>
+    </center>
+    {% if error %}
+    <p class="error"><strong>Error:</strong> {{ error }}
+      {% endif %}
   </div>
 </body>
 

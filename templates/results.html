@@ -30,8 +30,10 @@
 <body>
   <div class="container">
     <div class="row">
-        <div class="col-lg-3"><a href={{url_for('index')}}><img src={{url_for('static', filename="textlogo.png")}}></a></div>
-      
+        <div class="col-lg-11"><a href={{url_for('index')}}><img src={{url_for('static', filename="textlogo.png")}}></a></div>
+        <div class="col-lg-1">
+                <a href={{url_for('logout')}}>Logout</a></div></div>
+      <div class="row">
       <div class="col-lg-6">
       <div class="col-lg-6"><a href={{url_for('profile')}}><img class="profilePic" src="{{img_url}}"></a>
           </div>
@@ -53,7 +55,6 @@
     </div>
     <div class="row">
       <div class="col-lg-12">
-        <a href={{url_for('logout')}}>Logout</a>
       </div>
     </div>
     <div class="row">

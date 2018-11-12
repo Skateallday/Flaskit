@@ -1,51 +1,56 @@
 <!DOCTYPE html>
 <html>
-<head>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
-<title>Instaslam</title>
+<head>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+  <title>Instaslam</title>
 
 </head>
 
 <body>
-<div class="container">
-<div class="row">
-  <div class="col-lg-4"></div>
-  <div class="col-lg-3"><a href={{url_for('index')}}><img src={{url_for('static', filename="logo1.png")}}></a></div>
-  <div class="col-lg-5"><a href={{url_for('login')}} class="btn btn-link" id="signip">Sign in!</a></div>
-</div>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4"></div>
+      <div class="col-lg-3"><a href={{url_for('index')}}><img src={{url_for('static', filename="logo1.png")}}></a></div>
+      <div class="col-lg-5"><a href={{url_for('login')}} class="btn btn-link" id="signip">Sign in!</a></div>
+    </div>
 
-<form method='post' action='/register/' enctype=multipart/form-data action="{{ url_for('upload') }}" class="group-form">
-<div class="row">
-  <div class="col-lg-4"></div>
-  <div class="col-lg-4">
-    
-    
-      <label>Username*</label>
-      <input type="text" name="signupUsername" id="signupUsername" value="{{ request.form.signupUsername }}" class="form-control" aria-describedby="signupUsername" placeholder="Username">
-      <label>Password*</label>
-      <input type="password" name="signupPassword" id="signupPassword" value="{{ request.form.signupPassword }}" class="form-control" aria-describedby="signupPassword" placeholder="password">
-      <label>Email</label>
-      <input type="email" name="signupEmail" id="signupEmail" value="{{ request.form.signupEmail }}" class="form-control" aria-describedby="signupEmail" placeholder="Email">
-      <label>Profile Picture</label>
-      <input type="file" name="profilephoto">
-      
-      <p>*Required fields</p>
+    <form method='post' action='/register/' enctype=multipart/form-data action="{{ url_for('upload') }}" class="group-form">
+      <div class="row">
+        <div class="col-lg-4"></div>
+        <div class="col-lg-4">
+
+
+          <label>Username*</label>
+          <input type="text" name="signupUsername" id="signupUsername" value="{{ request.form.signupUsername }}" class="form-control"
+            aria-describedby="signupUsername" placeholder="Username">
+          <label>Password*</label>
+          <input type="password" name="signupPassword" id="signupPassword" value="{{ request.form.signupPassword }}"
+            class="form-control" aria-describedby="signupPassword" placeholder="password">
+          <label>Email</label>
+          <input type="email" name="signupEmail" id="signupEmail" value="{{ request.form.signupEmail }}" class="form-control"
+            aria-describedby="signupEmail" placeholder="Email">
+          <label>Profile Picture</label>
+          <input type="file" name="profilephoto">
+
+          <p>*Required fields</p>
+        </div>
+        <div class="col-lg-4"></div>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-4"><br></div>
+        <div class="col-lg-4"><button type="submit" class="btn btn-primary" id="start">Join the fun</button></div>
+        <div class="col-lg-4"></div>
+      </div>
+    </form>
+    <div class="row">
+      <div class="col-lg-4"><br></div>
+      <div class="col-lg-4">{{error}}</div>
+      <div class="col-lg-4"></div>
+    </div>
   </div>
-  <div class="col-lg-4"></div>
-</div>
-
-<div class="row">
-  <div class="col-lg-4"><br></div>
-  <div class="col-lg-4"><button type="submit" class="btn btn-primary" id="start">Join the fun</button></div>
-  <div class="col-lg-4"></div>
-</div></form>
-<div class="row">
-  <div class="col-lg-4"><br></div>
-  <div class="col-lg-4">{{error}}</div>
-  <div class="col-lg-4"></div>
-</div>
-</div>
 </body>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
