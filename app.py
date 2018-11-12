@@ -33,6 +33,10 @@ def validate(username, password):
                         completion=check_password(dbPass, password)
     return completion
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
 
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
@@ -58,10 +62,6 @@ def login():
                         else:
                                 error=("username and password not recognised")
                                 return render_template('login.html', error=error)
-                        print("username and password not recognised")
-                        return render_template('login.html', error=error)
-                print("username and password not recognised")
-                return render_template('login.html', error=error)
         print("username and password not recognised")
         return render_template('login.html', error=error)
 
@@ -135,7 +135,7 @@ def search():
                 if request.method == 'POST':
                         return searchResults(search)
                 img_url = url_for('static', filename= 'profile/' + username+'.jpg')
-                return render_template('searchResults.html', img_url=img_url, form=search,  username=g.username)
+                return render_template('searchResults.html', img_url=img_url, search=search,  username=g.username)
         else:   
                 error = 'Please sign in before accessing this page!'
                 return render_template('index.html', error=error)
@@ -173,22 +173,14 @@ def searchResults(search):
                                         
                                 
                                 if not results:
-                                        error= 'No results found!'
+                                        error= 'Yo No results found!'
                                         img_url = url_for('static', filename= 'profile/' + username+'.jpg')
                                         return render_template('search.html', error=error, img_url=img_url, search=search)
                                 else:
                                         
                                         img_url = url_for('static', filename= 'profile/' + username+'.jpg')
                                         return render_template('searchResults.html', img_url=img_url, results=results)
-                                error= 'No results found!'
-                                img_url = url_for('static', filename= 'profile/' + username+'.jpg')
-                                return render_template('search.html', img_url=img_url, error=error)
-                        error= 'No results found!'
-                        img_url = url_for('static', filename= 'profile/' + username+'.jpg')
-                        return render_template('search.html', img_url=img_url, error=error)
-                error= 'No results found!'
-                img_url = url_for('static', filename= 'profile/' + username+'.jpg')
-                return render_template('search.html', img_url=img_url, error=error)
+                                
         error= 'No results found!'
         img_url = url_for('static', filename= 'profile/' + username+'.jpg')
         return render_template('search.html', img_url=img_url, error=error)

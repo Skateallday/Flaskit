@@ -40,10 +40,10 @@
             <a href={{url_for('profile')}}><img class="profilePic" src="{{img_url}}"></a>
           </div>
         <div class="col-lg-3">
-          <p>{{username}}</p><br>Followers<br>{{dfollowers[3]}}
+          <p><h1>{{username}}</h1></p><br>Followers<br>{{dfollowers[3]}}
           </div>
         <div class="col-lg-3">
-          <button class="btn btn-primary">Follow</button><br><br>Following<br>{{dfollowing[4]}}
+          <p><button action="follow" class="btn btn-primary">Follow</button><button action="unfollow" class="btn btn-danger" style="display:none">Unfollow</button></button></p><br><br>Following<br>{{dfollowing[4]}}
           </div>
     </div>
     <div class="row">
@@ -53,12 +53,7 @@
       </div>
 
     </div>
-    <div class="row">
-      <div class="col-lg-12">
-      </div>
-    </div>
-  </div>
-  <div class="container">
+    
     <div class="row">
     
       <nav class="navbar navbar-inverse">
@@ -86,9 +81,9 @@
                   <a href={{url_for('profile')}}>profile</a>
                 </li>
                 
-              </ul>
-            </div>
-          </nav>
+              </ul></nav>
+            </div></div>
+          
     
 </body>
 
