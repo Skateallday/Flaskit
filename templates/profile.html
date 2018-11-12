@@ -46,9 +46,7 @@
           <h1>{{username}}</h1>
         </p><br>Followers<br>{{dfollowers[3]}}
       </div>
-      <div class="col-lg-3">
-        <p><button action="follow" class="btn btn-primary">Follow</button><button action="unfollow" class="btn btn-danger"
-            style="display:none">Unfollow</button></button></p><br><br>Following<br>{{dfollowing[4]}}
+      <div class="col-lg-3"><button class="btn btn-success">Edit Profile</button></p><br><br>Following<br>{{dfollowing[4]}}
       </div>
     </div>
     <div class="row">
@@ -72,8 +70,8 @@
           <li class="nav-item">
 
             <a class="nav-brand" href={{url_for('search')}}>Search</a>
-          </li>
-          <li class="nav-item"><input type="hidden" role="uploadcare-uploader" name="content" data-crop="free" />
+          </li><form method='POST' action='/urlDump/'>
+          <li class="nav-item"><input type="hidden" role="uploadcare-uploader" name="content" data-crop="free" /></form>
           </li>
           <li class="nav-item">
             <a href={{url_for('notifications')}}>Notifications<span class="badge">4</span></a>
