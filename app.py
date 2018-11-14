@@ -302,10 +302,6 @@ def follow():
                                 with con:
                                         c = con.cursor()
                                         follow = request.form['follow'] 
-                                        
-                                        
-
-                                        
                                         addFollowerNames = ("UPDATE USER SET followerNames = followerNames  || (?) ")
                                         
                                         c.executemany(addFollowerNames, followersNames)
@@ -316,13 +312,12 @@ def follow():
                                         c.execute(find_followers, [sUsername])
                                         followers = c.fetchall()
                                         sFollowers = len(followers)
-                                        
+                                        print(sFollowers)
                                         
                                         find_following = ("SELECT * FROM USER WHERE USERNAME LIKE (?)")
                                         c.execute(find_following, [sUsername])
                                         following= c.fetchall()                                    
                                         sFollowing = (following[0])
-                                        
                                         
                                         search_url = url_for('static', filename= 'profile/' + sUsername+'.jpg')
                                         return render_template("searchProfile.html", followers=sFollowers, following=sFollowing, search_url=search_url, username=g.username)
@@ -357,7 +352,8 @@ def searchProfile():
                                 following = c.fetchall()
                                 sfollowing = following[0]
                                 print(sfollowing)            
-                                
+                                followDisplay = "hidden"
+                                unfollowDisplay = "hidden"
                                 search_url = url_for('static', filename= 'profile/' + search +'.jpg')
                                 img_url = url_for('static', filename= 'profile/' + username+'.jpg')
                                 return render_template("searchProfile.html", sfollowers=sfollowers, sfollowing=sfollowing, search_url=search_url, img_url=img_url, search=search, username=g.username)
