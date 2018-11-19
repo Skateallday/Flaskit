@@ -2,16 +2,18 @@ from flask import Flask, render_template, request, redirect, Response, url_for, 
 from flask_uploads import UploadSet, configure_uploads, IMAGES
 import sqlite3
 import os
+from models import *
 from forms import UserSearchForm
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import hashlib
 from werkzeug.utils import secure_filename
 
+
 app = Flask(__name__)
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SECRET_KEY'] = os.urandom(24)
-
+db = SQLAlchemy(app)
 photos = UploadSet('photos')
 app.config['UPLOADED_PHOTOS_DEST']= 'static'
 configure_uploads(app, photos)
