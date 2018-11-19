@@ -8,6 +8,62 @@
     UPLOADCARE_PUBLIC_KEY = '2d775a81c095ee771926';
     UPLOADCARE_EFFECTS = 'crop,rotate,mirror,flip,enhance,sharp,blur,grayscale,invert';
     UPLOADCARE_IMAGES_ONLY = true;
+    PREVIEW_URL = "";
+    CURRENT_ROTATION = 0;
+    BASE_URL = "";</script>
+<script>    function installWidgetPreviewSingle(widget, img){
+      widget.onChange(function(file){
+        if (file){
+          file.done(function(fileInfo){}
+            var size = '' + (img.wudth()*2) + 'x' + (img.height() * 2);
+            PREVIEW_URL = fileInfo.cdnUrl;
+            BASE_URL = PREVIEW_URL;
+            $('.empty-upload-container'.html("<img id='previewing'>"))
+            $('#previewimg').attr('src', PREVIEW_URL)
+            $('#previewimg').css('width', img.width())
+            $('#previewimg').css('height', img.height())
+            $('#previewimg').css('transition', 'all 0.5s ease-out')
+            $('.empty-upload-container').css('height', img.height())
+            $('.upload-options-disabled').css('display', 'none')
+            $('.effect').each(function(){
+               $('.effect img').attr('src', PREVIEW_URL)
+               $(this).click(function(){
+                 $('#caption-div').slideUp(200, function(){
+                  })
+                $('#filter-div').slideUp(200, function(){
+
+                })
+                if (fileInfo.mimeType != "image/jpeg"){
+                    getEffect($('img', this).attr('class'), false)
+                } else{
+                  getEffect($('img', this).attr('class'), true)
+                }
+                $('#previewimg').attr('src', PREVIEW_URL)
+               })
+               })
+            });
+            
+            
+        }
+     
+$('.upload-button').click~(function(){
+   if (SET_PROFILE_PIC == false){
+     $.post("ajax-save-photo",
+     {
+       url: $("#previewing").attr('src'),
+       baseurl: BASE_URL,
+       caption: $('#captionbox').val()
+     },
+     function(data, status){
+       if (JSON.parse(data).Status == 'Success'){
+         window.location = '';
+       }
+     
+     });
+   }
+})
+
+
   </script>
 
   <script src="https://ucarecdn.com/libs/widget/3.6.1/uploadcare.full.min.js"></script>
@@ -90,7 +146,7 @@
 </body>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 </html>
