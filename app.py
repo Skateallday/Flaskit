@@ -187,8 +187,6 @@ def searchResults(search):
         return render_template('search.html', img_url=img_url, error=error)
 
 
-        
-
 
 @app.route('/searchUsers/', methods=['GET', 'POST'])
 def searchUsers():
@@ -210,17 +208,19 @@ def homepage():
                 completion = False
                 with con:
                         c = con.cursor()
-                        c.execute('SELECT * FROM PHOTO')
+                        c.execute('SELECT url, username FROM PHOTO ORDER BY dateUploaded DESC')
                         url = c.fetchall()
                         print(url)
-                        
                         img_url = url_for('static', filename= 'profile/' + username+'.jpg')
                         return render_template("homepage.html", img_url=img_url, url=url, username=g.username)
-                error = 'Please sign in before accessing this page!'
-                return render_template('index.html', error=error)
+                img_url = url_for('static', filename= 'profile/' + username+'.jpg')
+                return render_template("homepage.html", img_url=img_url, url=url, username=g.username)
+        error = 'Please sign in before accessing this page!'
+        return render_template('index.html', error=error)
 
 @app.route('/upload/', methods=['GET', 'POST'])
 def upload():
+        error = None
         if g.username:
                 username=g.username
                 if request.method == 'POST':
@@ -237,11 +237,14 @@ def upload():
                                 sfollowers = followers[0]
                                 dfollowers = sfollowers[0]
                                 print (dfollowers)
-                                insert = [(upload, dfollowers)]
-                                insertImage = ("INSERT INTO PHOTO (url, owner_id) VALUES (?,?)")
+                                insert = [(upload, username)]
+                                insertImage = ("INSERT INTO PHOTO (url, username, dateUPLOADED) VALUES (?,?, datetime('now', 'localtime'))")
                                 c.executemany(insertImage, insert)
                                 img_url = url_for('static', filename= 'profile/' + username+'.jpg')
                                 return render_template("homepage.html", img_url=img_url, username=g.username)
+                        return render_template("homepage.html", img_url=img_url, username=g.username)
+        error = 'Please sign in before accessing this page!'
+        return render_template('index.html', error=error)
 
 @app.route("/logout")
 def logout():
@@ -293,9 +296,15 @@ def profile():
                         c.execute(countfollowing)  
                         following = c.fetchall()
                         finalFollowing = following[0]
+
+                        profilePictures = ('SELECT url, username FROM PHOTO WHERE username LIKE (?) ORDER BY dateUploaded DESC' )
+                        c.execute(profilePictures, [username])
+                        url = c.fetchall()
+                        
+                        print(url)
                         search_url = url_for('static', filename= 'profile/' + username+'.jpg')                        
                         img_url = url_for('static', filename= 'profile/' + username+'.jpg')
-                        return render_template("profile.html", followers=finalFollowers[0], following=finalFollowing[0], img_url=img_url, username=g.username)
+                        return render_template("profile.html", followers=finalFollowers[0], following=finalFollowing[0], url=url, img_url=img_url, username=g.username)
         else:   
                 error = 'Please sign in before accessing this page!'
                 return render_template('index.html', error=error)
@@ -429,6 +438,9 @@ def searchProfile():
                                 following = c.fetchall()
                                 sfollowing = following[0]
                                 dfollowing = sfollowing[0]
+                                profilePictures = ('SELECT url, username FROM PHOTO WHERE username LIKE (?) ORDER BY dateUploaded DESC' )
+                                c.execute(profilePictures, [search])
+                                url = c.fetchall()
                                             
                                 countFollowers = ("SELECT COUNT(followed_id) FROM relationship WHERE followed_id = %s" %dfollowers)
                                 c.execute(countFollowers) 
@@ -441,8 +453,8 @@ def searchProfile():
                                 search_url = url_for('static', filename= 'profile/' + search +'.jpg')
                                 img_url = url_for('static', filename= 'profile/' + username+'.jpg')
                                 if finalFollowers[0] > 1:
-                                        return render_template("follow.html", followers=finalFollowers[0], following=finalFollowing[0], search_url=search_url, search=g.search, username=g.username)
-                                return render_template("searchProfile.html", followers=finalFollowers[0], following=finalFollowing[0], search_url=search_url, img_url=img_url, search=search, username=g.username)
+                                        return render_template("follow.html", followers=finalFollowers[0], following=finalFollowing[0], url=url, search_url=search_url, search=g.search, username=g.username)
+                                return render_template("searchProfile.html", followers=finalFollowers[0], following=finalFollowing[0], url=url, search_url=search_url, img_url=img_url, search=search, username=g.username)
                 else:   
                         error = 'Please sign in before accessing this page!'
                         return render_template('index.html', error=error)

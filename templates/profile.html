@@ -21,10 +21,16 @@
     .profilePic{
     height:180px;
     width:180px;
-    border-radius: 100px;
+    border-radius: 100px;}
+
+    .profileUploads{
+      height:300px;
+      width:auto;
+
+    }
 
 
-}
+
 </style>
 
 </head>
@@ -46,17 +52,24 @@
           <h1>{{username}}</h1>
         </p><br>Followers<br>{{followers}}
       </div>
-      <div class="col-lg-3"><button class="btn btn-success">Edit Profile</button></p><br><br>Following<br>{{following}}
+      <div class="col-lg-3">
+        
+        </p><br><br>Following<br>{{following}}
       </div>
     </div>
     <div class="row">
       <div class="col-lg-6"></div>
       <div class="col-lg-6">
-        <h1>Profile for {{username}}</h1>
       </div>
 
     </div>
+    <div class="row">{% for links, owners in url %}<div class="col-lg-4">
+        
+        <br><img class="profileUploads" src="{{ links }}">
+      </div>
 
+
+      {% endfor %}</div>
     <div class="row">
 
       <nav class="navbar navbar-inverse">
@@ -70,9 +83,12 @@
           <li class="nav-item">
 
             <a class="nav-brand" href={{url_for('search')}}>Search</a>
-          </li><form method='POST' action='/upload/'>
-          <li class="nav-item"><input type="hidden" role="uploadcare-uploader" name="content" data-crop="free" />
-          </li><input type="submit" value = "save"></form>
+          </li>
+          <li class="nav-item">
+            <form method='POST' action='/upload/'><input type="hidden" role="uploadcare-uploader" name="content"
+                data-crop="free" />
+              <input class="btn btn-primary" type="submit" value="save"></form>
+          </li>
           <li class="nav-item">
             <a href={{url_for('notifications')}}>Notifications<span class="badge">4</span></a>
           </li>

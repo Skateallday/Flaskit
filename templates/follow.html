@@ -19,7 +19,7 @@
   <script>
     uploadcare.registerTab('preview', uploadcareTabEffects)
   </script>
-  
+
   <title>Profile Instaslam</title>
   <style>
     .profilePic{
@@ -51,21 +51,28 @@
       </div>
       <div class="col-lg-3">
         <p>
-         <form method='POST' action="/follow/">
+          <form method='POST' action="/follow/">
             <p><button type="submit" class="btn btn-primary" id="follow" style="display:none;" name="follow">Follow</button>
           </form>
         </p>
         <p>
           <form method='POST' action="/unfollow/">
-            <p><button type="submit" class="btn btn-danger" id="unfollow"  name="unfollow">Unfollow</button>
+            <p><button type="submit" class="btn btn-danger" id="unfollow" name="unfollow">Unfollow</button>
           </form>
         </p><br><br>Following<br>{{following}}
       </div>
       <div class="row">
         <div class="col-lg-12">
-          <h1>Profile for {{search}}</h1>
         </div>
       </div>
+
+      <div class="row">{% for links, owners in url %}<div class="col-lg-3">
+          <h1>{{ owners }}</h1>
+          <img src="{{ links }}">
+        </div>
+
+
+        {% endfor %}</div>
     </div>
     <div class="row">
 
@@ -81,7 +88,10 @@
 
             <a class="nav-brand" href={{url_for('search')}}>Search</a>
           </li>
-          <li class="nav-item"><input type="hidden" role="uploadcare-uploader" name="content" data-crop="free" />
+          <li class="nav-item">
+            <form method='POST' action='/upload/'><input type="hidden" role="uploadcare-uploader" name="content"
+                data-crop="free" />
+              <input class="btn btn-primary" type="submit" value="save"></form>
           </li>
           <li class="nav-item">
             <a href={{url_for('notifications')}}>Notifications<span class="badge">4</span></a>

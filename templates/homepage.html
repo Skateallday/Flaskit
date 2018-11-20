@@ -27,6 +27,13 @@
 
 
 }
+.homepageStream{
+  height:auto;
+  width:auto;
+  padding-left:300px;
+  display: flex;
+  justify-content: center;
+}
 </style>
 
 </head>
@@ -47,21 +54,17 @@
       <div class="col-lg-12">
       </div>
     </div>
+    
     <div class="row">
-      <div class="col-lg-9">
-        <h1>This is your homepage {{username}}!</h1>
-      </div>
-
-    </div>
-    <div class="row">
-      <div class="col-lg-12">
-      {% for links, owners in url %}
-        <h1>{{owners}}</h1>
-        <img src="{{ links }}">
-
+      <div class="col-lg-12">{% for links, owners in url %}
         
+          <div class="row">
+        <h1>{{owners}}</h1></div><div class="row">
+        <img class="homepageStream" src="{{ links }}">
+</div><div class="row">Likes 0</div>
+       
       {% endfor %}
-
+    
 
       </div>
     </div>
