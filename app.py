@@ -3,8 +3,6 @@ from flask_uploads import UploadSet, configure_uploads, IMAGES
 import sqlite3
 import os
 from forms import UserSearchForm
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 import hashlib
 from werkzeug.utils import secure_filename
 
