@@ -25,10 +25,14 @@
     .profilePic{
     height:180px;
     width:180px;
-    border-radius: 100px;
+    border-radius: 100px;}
+    .profileUploads{
+      height:300px;
+      width:auto;
+
+    }
 
 
-}
 </style>
 
 </head>
@@ -65,10 +69,10 @@
         <div class="col-lg-12">
         </div>
       </div>
-
-      <div class="row">{% for links, owners in url %}<div class="col-lg-3">
-          <h1>{{ owners }}</h1>
-          <img src="{{ links }}">
+<div class="row">
+     {% for links, owners in url %} <div class="col-lg-4">
+         
+          <img class="profileUploads" src="{{ links }}">
         </div>
 
 
