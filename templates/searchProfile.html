@@ -19,17 +19,7 @@
   <script>
     uploadcare.registerTab('preview', uploadcareTabEffects)
   </script>
-  <script>$(document).ready(function(){
-      
-      $("#follow").click(function(){
-          $("#follow").hide();
-          $("#unfollow").show();
-      });
-      $("#unfollow").click(function(){
-          $("#unfollow").hide();
-          $('#follow').show();
-      });
-  });</script>
+  
   <title>Profile Instaslam</title>
   <style>
     .profilePic{
@@ -67,7 +57,7 @@
         </p>
         <p>
           <form method='POST' action="/unfollow/">
-            <p><button type="submit" class="btn btn-danger" id="unfollow" name="unfollow">Unfollow</button>
+            <p><button type="submit" class="btn btn-danger" id="unfollow" style="display:none;" name="unfollow">Unfollow</button>
           </form>
         </p><br><br>Following<br>{{following}}
       </div>

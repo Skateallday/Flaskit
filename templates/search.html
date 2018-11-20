@@ -66,9 +66,9 @@
               </li>
               <li class="nav-item active">
                 <a href={{url_for('search')}}>Search<span class="sr-only">(current)</span></a>
-              </li>
-              <li class="nav-item"><input type="hidden" role="uploadcare-uploader" name="content" data-crop="free" />
-              </li>
+              </li><form method='POST' action='/upload/'>
+          <li class="nav-item"><input type="hidden" role="uploadcare-uploader" name="content" data-crop="free" />
+          </li><input type="submit" value="save"></form>
               <li class="nav-item">
                 <a href={{url_for('notifications')}}>Notifications<span class="badge">4</span></a>
               </li>

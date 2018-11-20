@@ -10,12 +10,16 @@
     UPLOADCARE_EFFECTS = 'crop,rotate,mirror,flip,enhance,sharp,blur,grayscale,invert';
     UPLOADCARE_IMAGES_ONLY = true;
   </script>
+  <script src="../static/scripts.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
   <script src="https://ucarecdn.com/libs/widget/3.6.1/uploadcare.full.min.js"></script>
   <script src="https://ucarecdn.com/libs/widget-tab-effects/1.x/uploadcare.tab-effects.js"></script>
   <script>
     uploadcare.registerTab('preview', uploadcareTabEffects)
   </script>
+  
   <title>Profile Instaslam</title>
   <style>
     .profilePic{
@@ -33,30 +37,36 @@
   <div class="container">
     <div class="row">
       <div class="col-lg-11"><a href={{url_for('index')}}><img src={{url_for('static', filename="textlogo.png")}}></a></div>
-
-      <div class="col-lg-1">
-        <a href={{url_for('logout')}}>Logout</a></div>
+      <div class="col-lg-1"><a href={{url_for('logout')}}>Logout</a></div>
     </div>
     <div class="row">
       <div class="col-lg-5">
-        <a href={{url_for('profile')}}><img class="profilePic" src="{{img_url}}"></a>
+        <a href={{url_for('searchProfile')}}><img class="profilePic" src="{{search_url}}"></a>
+      </div>
+
+      <div class="col-lg-3">
+        <p>
+          <h1>{{search}}</h1>
+        </p><br>Followers<br>{{followers}}
       </div>
       <div class="col-lg-3">
         <p>
-          <h1>{{username}}</h1>
-        </p><br>Followers<br>{{followers}}
+         <form method='POST' action="/follow/">
+            <p><button type="submit" class="btn btn-primary" id="follow" style="display:none;" name="follow">Follow</button>
+          </form>
+        </p>
+        <p>
+          <form method='POST' action="/unfollow/">
+            <p><button type="submit" class="btn btn-danger" id="unfollow"  name="unfollow">Unfollow</button>
+          </form>
+        </p><br><br>Following<br>{{following}}
       </div>
-      <div class="col-lg-3"><button class="btn btn-success">Edit Profile</button></p><br><br>Following<br>{{following}}
+      <div class="row">
+        <div class="col-lg-12">
+          <h1>Profile for {{search}}</h1>
+        </div>
       </div>
     </div>
-    <div class="row">
-      <div class="col-lg-6"></div>
-      <div class="col-lg-6">
-        <h1>Profile for {{username}}</h1>
-      </div>
-
-    </div>
-
     <div class="row">
 
       <nav class="navbar navbar-inverse">
@@ -70,9 +80,9 @@
           <li class="nav-item">
 
             <a class="nav-brand" href={{url_for('search')}}>Search</a>
-          </li><form method='POST' action='/upload/'>
+          </li>
           <li class="nav-item"><input type="hidden" role="uploadcare-uploader" name="content" data-crop="free" />
-          </li><input type="submit" value = "save"></form>
+          </li>
           <li class="nav-item">
             <a href={{url_for('notifications')}}>Notifications<span class="badge">4</span></a>
           </li>
@@ -84,7 +94,6 @@
       </nav>
     </div>
   </div>
-
 
 </body>
 

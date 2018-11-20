@@ -94,17 +94,17 @@ def register():
 
                 signupUsername = request.form['signupUsername']
                 signupPassword = request.form['signupPassword']
-                signupEmail = request.form['signupEmail']
+                
                 filename= photos.save(request.files['profilephoto'], 'profile', signupUsername+'.jpg')
 
-                newEntry = [(signupUsername, signupPassword, signupEmail, 0 ,0, "", "")]
+                newEntry = [(signupUsername, signupPassword, 0 ,0 )]
               
                 con = sqlite3.connect('static/User.db')
                 completion = False
                 with con:
                         c = con.cursor()
                         try:
-                                sql = '''INSERT INTO USER (username, password, email, followers, following, followerNames, followingNames  ) VALUES(?, ?, ?, ?,?,?, ?) '''
+                                sql = '''INSERT INTO USER (username, password, followers, following  ) VALUES(?, ?, ?, ?) '''
                                 c.executemany(sql, newEntry)
                         except sqlite3.IntegrityError as e:
                                 error = 'This is already an account, please try again!'
@@ -206,30 +206,42 @@ def homepage():
         error = None
         if g.username:
                 username=g.username
-                def ajaxsavephoto(request):
-                        ajax = AjaxSavePhoto(request.POST, request.username)
-                        context = {'ajax_output': ajax.output()}
-                        return render(request, 'ajax.html', context)
-                img_url = url_for('static', filename= 'profile/' + username+'.jpg')
-                return render_template("homepage.html", img_url=img_url, username=g.username)
-        else:   
+                con = sqlite3.connect('static/User.db')
+                completion = False
+                with con:
+                        c = con.cursor()
+                        c.execute('SELECT * FROM PHOTO')
+                        url = c.fetchall()
+                        print(url)
+                        
+                        img_url = url_for('static', filename= 'profile/' + username+'.jpg')
+                        return render_template("homepage.html", img_url=img_url, url=url, username=g.username)
                 error = 'Please sign in before accessing this page!'
                 return render_template('index.html', error=error)
-
 
 @app.route('/upload/', methods=['GET', 'POST'])
 def upload():
-        error = None
-        
         if g.username:
                 username=g.username
-                
-                return render_template("upload.html", username=g.username)
-        else:   
-                error = 'Please sign in before accessing this page!'
-                return render_template('index.html', error=error)
-        
-
+                if request.method == 'POST':
+                        upload = request.form['content']
+                        print(upload)
+                        con = sqlite3.connect('static/User.db')
+                        completion = False
+                        with con:
+                                c = con.cursor()
+                                
+                                find_followers = ("SELECT * FROM USER WHERE USERNAME LIKE (?)")
+                                c.execute(find_followers, [username])
+                                followers = c.fetchall()
+                                sfollowers = followers[0]
+                                dfollowers = sfollowers[0]
+                                print (dfollowers)
+                                insert = [(upload, dfollowers)]
+                                insertImage = ("INSERT INTO PHOTO (url, owner_id) VALUES (?,?)")
+                                c.executemany(insertImage, insert)
+                                img_url = url_for('static', filename= 'profile/' + username+'.jpg')
+                                return render_template("homepage.html", img_url=img_url, username=g.username)
 
 @app.route("/logout")
 def logout():
@@ -268,19 +280,22 @@ def profile():
                         find_followers = ("SELECT * FROM USER WHERE USERNAME LIKE (?)")
                         c.execute(find_followers, [username])
                         followers = c.fetchall()
-                        dfollowers = followers[0]
+                        sfollowers = followers[0]
+                        dfollowers = sfollowers[0]
                         print (dfollowers)
-                        
-                        find_following = ("SELECT * FROM USER WHERE USERNAME LIKE (?)")
-                        c.execute(find_following, [username])
+
+                        countFollowers = ("SELECT COUNT(followed_id) FROM relationship WHERE followed_id = %s" %dfollowers)
+                        c.execute(countFollowers) 
+                        followers = c.fetchall()
+                        finalFollowers = followers[0]  
+
+                        countfollowing = ("SELECT COUNT(follower_id) FROM relationship WHERE follower_id = %s" %dfollowers)
+                        c.execute(countfollowing)  
                         following = c.fetchall()
-                        dfollowing = following[0]
-                        print(dfollowing)
-                        
-                                  
-                        
+                        finalFollowing = following[0]
+                        search_url = url_for('static', filename= 'profile/' + username+'.jpg')                        
                         img_url = url_for('static', filename= 'profile/' + username+'.jpg')
-                        return render_template("profile.html", dfollowers=dfollowers, dfollowing=dfollowing, img_url=img_url, username=g.username)
+                        return render_template("profile.html", followers=finalFollowers[0], following=finalFollowing[0], img_url=img_url, username=g.username)
         else:   
                 error = 'Please sign in before accessing this page!'
                 return render_template('index.html', error=error)
@@ -291,43 +306,100 @@ def profile():
 def follow():
         error = None
         img_url= None
-        followers =[]
-        following =[]
-        if g.search:
-                if g.username:
-                        sUsername=g.search
+        search_url = None
+        if g.username:
+                if g.search:
                         username=g.username
-                        
-                        followeringNames= (', ' + username)
-                        followersNames = (', ' + sUsername)
-                        if request.method =='POST':
-                                con = sqlite3.connect('static/User.db')
-                                completion = False
-                                with con:
-                                        c = con.cursor()
-                                        follow = request.form['follow'] 
-                                        addFollowerNames = ("UPDATE USER SET followerNames = followerNames  || (?) ")
-                                        
-                                        c.executemany(addFollowerNames, followersNames)
-                                        addFollowingNames = ("UPDATE USER SET followingNames = followingNames  || (?) ")
-                                        c.executemany(addFollowingNames, followeringNames)
+                        search=g.search
+                        con = sqlite3.connect('static/User.db')
+                        completion = False
+                        with con:
+                                c = con.cursor()
+                                
+                                find_followers = ("SELECT * FROM USER WHERE USERNAME LIKE (?)")
+                                c.execute(find_followers, [search])
+                                followers = c.fetchall()
+                                sfollowers = followers[0]
+                                dfollowers = sfollowers[0]
+                                print(dfollowers)
+                                
+                                find_following = ("SELECT * FROM USER WHERE USERNAME LIKE (?)")
+                                c.execute(find_following, [username])
+                                following = c.fetchall()
+                                sfollowing = following[0]
+                                rfollowing = sfollowers[0]
+                                
+                                userIDS = [(sfollowing[0], sfollowers[0])]
 
-                                        find_followers = ("SELECT (followerNames) FROM USER WHERE USERNAME LIKE(?)")
-                                        c.execute(find_followers, [sUsername])
-                                        followers = c.fetchall()
-                                        sFollowers = len(followers)
-                                        print(sFollowers)
-                                        
-                                        find_following = ("SELECT * FROM USER WHERE USERNAME LIKE (?)")
-                                        c.execute(find_following, [sUsername])
-                                        following= c.fetchall()                                    
-                                        sFollowing = (following[0])
-                                        
-                                        search_url = url_for('static', filename= 'profile/' + sUsername+'.jpg')
-                                        return render_template("searchProfile.html", followers=sFollowers, following=sFollowing, search_url=search_url, username=g.username)
-                        else:   
-                                error = 'Please sign in before accessing this page!'
-                                return render_template('index.html', error=error)
+                                print (userIDS)
+                                setFollow = ("INSERT INTO relationship (follower_id, followed_id) VALUES (?, ?)")
+                                c.executemany(setFollow, userIDS)
+
+                                countFollowers = ("SELECT COUNT(follower_id) FROM relationship WHERE follower_id = %s" %dfollowers)
+                                c.execute(countFollowers) 
+                                followers = c.fetchall()
+                                finalFollowers = followers[0]   
+                                countfollowing = ("SELECT COUNT(followed_id) FROM relationship WHERE followed_id = %s" %dfollowers)
+                                c.execute(countfollowing)  
+                                following = c.fetchall()
+                                finalFollowing = following[0]
+                                search_url = url_for('static', filename= 'profile/' + search+'.jpg')
+                                
+                                return render_template("follow.html", followers=finalFollowers[0], following=finalFollowing[0], search_url=search_url, username=g.username)
+                else:   
+                        error = 'Please sign in before accessing this page!'
+                        return render_template('index.html', error=error)
+        error = 'Please sign in before accessing this page!'
+        return render_template('index.html', error=error)
+
+ 
+@app.route('/unfollow/', methods=['GET', 'POST'])
+def unfollow():
+        error = None
+        img_url= None
+        search_url = None
+        if g.username:
+                if g.search:
+                        username=g.username
+                        search=g.search
+                        con = sqlite3.connect('static/User.db')
+                        completion = False
+                        with con:
+                                c = con.cursor()
+                                
+                                find_followers = ("SELECT * FROM USER WHERE USERNAME LIKE (?)")
+                                c.execute(find_followers, [search])
+                                followers = c.fetchall()
+                                sfollowers = followers[0]
+                                dfollowers = sfollowers[0]
+                                print(dfollowers)
+                                
+                                find_following = ("SELECT * FROM USER WHERE USERNAME LIKE (?)")
+                                c.execute(find_following, [username])
+                                following = c.fetchall()
+                                sfollowing = following[0]
+                                rfollowing = sfollowers[0]
+                                
+                                userIDS = [(sfollowing[0], sfollowers[0])]
+
+                                print (userIDS)
+                                unfollow = ("DELETE FROM relationship WHERE (follower_id, followed_id) LIKE (?, ?)")
+                                c.executemany(unfollow, userIDS)
+
+                                countFollowers = ("SELECT COUNT(follower_id) FROM relationship WHERE follower_id = %s" %dfollowers)
+                                c.execute(countFollowers) 
+                                followers = c.fetchall()
+                                finalFollowers = followers[0]   
+                                countfollowing = ("SELECT COUNT(followed_id) FROM relationship WHERE followed_id = %s" %dfollowers)
+                                c.execute(countfollowing)  
+                                following = c.fetchall()
+                                finalFollowing = following[0]
+                                search_url = url_for('static', filename= 'profile/' + search+'.jpg'
+                                )
+                                return render_template("searchProfile.html", followers=finalFollowers[0], following=finalFollowing[0], search_url=search_url, username=g.username)
+                else:   
+                        error = 'Please sign in before accessing this page!'
+                        return render_template('index.html', error=error)
         error = 'Please sign in before accessing this page!'
         return render_template('index.html', error=error)
 
@@ -349,18 +421,28 @@ def searchProfile():
                                 c.execute(find_followers, [search])
                                 followers = c.fetchall()
                                 sfollowers = followers[0]
+                                dfollowers = sfollowers[0]
                                 print (sfollowers)
                                 
                                 find_following = ("SELECT * FROM USER WHERE USERNAME LIKE (?)")
                                 c.execute(find_following, [search])
                                 following = c.fetchall()
                                 sfollowing = following[0]
-                                print(sfollowing)            
-                                followDisplay = "hidden"
-                                unfollowDisplay = "hidden"
+                                dfollowing = sfollowing[0]
+                                            
+                                countFollowers = ("SELECT COUNT(followed_id) FROM relationship WHERE followed_id = %s" %dfollowers)
+                                c.execute(countFollowers) 
+                                followers = c.fetchall()
+                                finalFollowers = followers[0]
+                                countfollowing = ("SELECT COUNT(follower_id) FROM relationship WHERE follower_id = %s" %dfollowing)
+                                c.execute(countfollowing)  
+                                following = c.fetchall()
+                                finalFollowing = following[0]
                                 search_url = url_for('static', filename= 'profile/' + search +'.jpg')
                                 img_url = url_for('static', filename= 'profile/' + username+'.jpg')
-                                return render_template("searchProfile.html", sfollowers=sfollowers, sfollowing=sfollowing, search_url=search_url, img_url=img_url, search=search, username=g.username)
+                                if finalFollowers[0] > 1:
+                                        return render_template("follow.html", followers=finalFollowers[0], following=finalFollowing[0], search_url=search_url, search=g.search, username=g.username)
+                                return render_template("searchProfile.html", followers=finalFollowers[0], following=finalFollowing[0], search_url=search_url, img_url=img_url, search=search, username=g.username)
                 else:   
                         error = 'Please sign in before accessing this page!'
                         return render_template('index.html', error=error)
