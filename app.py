@@ -216,6 +216,9 @@ def homepage():
         error = 'Please sign in before accessing this page!'
         return render_template('index.html', error=error)
 
+
+
+
 @app.route('/upload/', methods=['GET', 'POST'])
 def upload():
         error = None
@@ -390,7 +393,7 @@ def unfollow():
                                 userIDS = [(sfollowing[0], sfollowers[0])]
 
                                 print (userIDS)
-                                unfollow = ("DELETE FROM relationship WHERE (follower_id, followed_id) LIKE (?, ?)")
+                                unfollow = ("DELETE FROM relationship WHERE (follower_id) LIKE (?) AND (followed_id) LIKE (?)")
                                 c.executemany(unfollow, userIDS)
 
                                 countFollowers = ("SELECT COUNT(follower_id) FROM relationship WHERE follower_id = %s" %dfollowers)
@@ -409,6 +412,51 @@ def unfollow():
                         return render_template('index.html', error=error)
         error = 'Please sign in before accessing this page!'
         return render_template('index.html', error=error)
+
+@app.route('/otherProfile/<string:otherUsers>')
+def otherProfile(otherUsers):
+        error = None
+        img_url= None
+        search_url = None
+        if g.username:
+        
+                username=g.username
+                search=otherUsers
+                con = sqlite3.connect('static/User.db')
+                completion = False
+                with con:
+                        c = con.cursor()
+                        
+                        find_followers = ("SELECT * FROM USER WHERE USERNAME LIKE (?)")
+                        c.executemany(find_followers, search)
+                        followers = c.fetchall()
+                        
+                        print (followers)
+                        
+                        find_following = ("SELECT * FROM USER WHERE USERNAME LIKE (?)")
+                        c.execute(find_following, [search])
+                        following = c.fetchall()
+                        profilePictures = ('SELECT url, username FROM PHOTO WHERE username LIKE (?) ORDER BY dateUploaded DESC' )
+                        c.execute(profilePictures, [search])
+                        url = c.fetchall()
+                                        
+                        countFollowers = ("SELECT COUNT(followed_id) FROM relationship WHERE followed_id = %s" %followers)
+                        c.execute(countFollowers) 
+                        followers = c.fetchall()
+                        finalFollowers = followers[0]
+                        countfollowing = ("SELECT COUNT(follower_id) FROM relationship WHERE follower_id = %s" %following)
+                        c.execute(countfollowing)  
+                        following = c.fetchall()
+                        finalFollowing = following[0]
+                        search_url = url_for('static', filename= 'profile/' + search +'.jpg')
+                        img_url = url_for('static', filename= 'profile/' + username+'.jpg')
+                        if finalFollowers[0] > 1:
+                                return render_template("follow.html", otherUsers=otherUsers, followers=finalFollowers[0], following=finalFollowing[0], url=url, search_url=search_url, search=g.search, username=g.username)
+                        return render_template("searchProfile.html", followers=finalFollowers[0], following=finalFollowing[0], url=url, search_url=search_url, img_url=img_url, search=search, username=g.username)
+          
+        error = 'Please sign in before accessing this page!'
+        return render_template('index.html', error=error)
+
 
 @app.route('/searchProfile/')
 def searchProfile():

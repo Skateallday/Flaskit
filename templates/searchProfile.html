@@ -22,14 +22,22 @@
 
   <title>Profile Instaslam</title>
   <style>
+    
     .profilePic{
     height:180px;
     width:180px;
-    border-radius: 100px;
+    border-radius: 100px;}
+
+    .profileUploads{
+      height:300px;
+      width:auto;
+
+    }
 
 
-}
+
 </style>
+
 
 </head>
 
@@ -68,7 +76,7 @@
 
       <div class="row">{% for links, owners in url %}<div class="col-lg-3">
           <h1>{{ owners }}</h1>
-          <img src="{{ links }}">
+          <img class="profileUploads" src="{{ links }}">
 
         </div>
         {% endfor %}</div>
