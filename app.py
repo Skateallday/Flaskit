@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, Response, url_for, session, abort, g
+from flask import Flask, render_template, request, redirect, Response, url_for, session, abort, g, flash
 from flask_uploads import UploadSet, configure_uploads, IMAGES
 import sqlite3
 import os
@@ -46,8 +46,8 @@ def login():
                         except Exception:
                                 error=("username and password not recognised")
                                 return render_template('login.html', error=error)
-        print("username and password not recognised")
-        return render_template('login.html', error=error)
+        
+        return render_template('login.html')
 
 @app.route('/')
 def index():
@@ -79,10 +79,6 @@ def register():
                 signupPassword = request.form['signupPassword']
                 
                 pw_hash = bcrypt.generate_password_hash(signupPassword)
-                candidate = 'mystery'               
-                bcrypt.check_password_hash(pw_hash, candidate)
-                
-                print(candidate)
                 
                 filename= photos.save(request.files['profilephoto'], 'profile', signupUsername+'.jpg')
 
@@ -116,21 +112,21 @@ def notifications():
                         firstId=c.fetchall()
                         secondId=firstId[0]
                         thirdId=secondId[0]
-                        print(thirdId)
+                        
                         findNotes = ("SELECT noteType FROM notifications where (receiver_id) like (?)")
                         c.execute(findNotes, secondId)
                         noteNumber = c.fetchall()
                         
                         
                         
-                        print(noteNumber)
+                        
                         if noteNumber == 1 :
                                 noteMessage = "You have a new follower"
-                                print(noteMessage)
+                                
                         else: 
                                 
                                 noteMessage = "You have a no new notifications"
-                                print(noteMessage)
+                                
                                 deleteNotes = ("DELETE FROM notifications WHERE (receiver_id) LIKE (?) ")
                                 c.execute(deleteNotes, secondId)
                         
@@ -184,7 +180,7 @@ def searchResults(search):
 
                                 for i in results:
                                         session['search']=search_string
-                                        print(i[1])
+                                        
                                         search_img = url_for('static', filename= 'profile/' + search_string+'.jpg')
                                         img_url = url_for('static', filename= 'profile/' + username+'.jpg')
                                         return render_template("results.html", search=search, search_img=search_img, i=i, img_url=img_url, username=g.username)
@@ -246,7 +242,7 @@ def upload():
                 username=g.username
                 if request.method == 'POST':
                         upload = request.form['content']
-                        print(upload)
+                        
                         con = sqlite3.connect('static/User.db')
                         completion = False
                         with con:
@@ -257,7 +253,7 @@ def upload():
                                 followers = c.fetchall()
                                 sfollowers = followers[0]
                                 dfollowers = sfollowers[0]
-                                print (dfollowers)
+                                
                                 insert = [(upload, username)]
                                 insertImage = ("INSERT INTO PHOTO (url, username, dateUPLOADED) VALUES (?,?, datetime('now', 'localtime'))")
                                 c.executemany(insertImage, insert)
@@ -306,7 +302,7 @@ def profile():
                         followers = c.fetchall()
                         sfollowers = followers[0]
                         dfollowers = sfollowers[0]
-                        print (dfollowers)
+                        
 
                         countFollowers = ("SELECT COUNT(followed_id) FROM relationships WHERE followed_id = %s" %dfollowers)
                         c.execute(countFollowers) 
@@ -322,7 +318,7 @@ def profile():
                         c.execute(profilePictures, [username])
                         url = c.fetchall()
                         
-                        print(url)
+                        
                         search_url = url_for('static', filename= 'profile/' + username+'.jpg')                        
                         img_url = url_for('static', filename= 'profile/' + username+'.jpg')
                         return render_template("profile.html", followers=finalFollowers[0], following=finalFollowing[0], url=url, img_url=img_url, username=g.username)
@@ -352,7 +348,7 @@ def follow():
                                 followers = c.fetchall()
                                 sfollowers = followers[0]
                                 dfollowers = sfollowers[0]
-                                print(dfollowers)
+                                
                                 
                                 find_following = ("SELECT * FROM USER WHERE USERNAME LIKE (?)")
                                 c.execute(find_following, [username])
@@ -363,7 +359,7 @@ def follow():
                                 userIDS = [(sfollowing[0], sfollowers[0], "Yes")]
                                 noteDriver =[(sfollowing[0], sfollowers[0], 1)]
 
-                                print (userIDS)
+                                
                                 setFollow = ("INSERT INTO relationships (follower_id, followed_id, exsists) VALUES (?, ?, ?)")
                                 c.executemany(setFollow, userIDS)
                                 giveNotification =("INSERT INTO notifications (  giver_id, receiver_id, noteType)  VALUES (?,?,?)")
@@ -380,7 +376,7 @@ def follow():
                                 search_url = url_for('static', filename= 'profile/' + search+'.jpg')
                                 
                                 
-                                return render_template("follow.html", followers=finalFollowers[0], notifications=notifications ,following=finalFollowing[0], search_url=search_url, username=g.username)
+                                return redirect(url_for('searchProfile', followers=finalFollowers[0], notifications=notifications ,following=finalFollowing[0], search_url=search_url, username=g.username))
                 else:   
                         error = 'Please sign in before accessing this page!'
                         return render_template('index.html', error=error)
@@ -408,7 +404,7 @@ def unfollow():
                                 followers = c.fetchall()
                                 sfollowers = followers[0]
                                 dfollowers = sfollowers[0]
-                                print(dfollowers)
+                                
                                 
                                 find_following = ("SELECT * FROM USER WHERE USERNAME LIKE (?)")
                                 c.execute(find_following, [username])
@@ -418,7 +414,7 @@ def unfollow():
                                 
                                 userIDS = [(sfollowing[0], sfollowers[0])]
 
-                                print (userIDS)
+                                
                                 unfollow = ("DELETE FROM relationships WHERE (follower_id) LIKE (?) AND (followed_id) LIKE (?)")
                                 c.executemany(unfollow, userIDS)
                                 unfollow = ("DELETE FROM notifications WHERE (giver_id) LIKE (?) AND (receiver_id) LIKE (?)")
@@ -454,7 +450,7 @@ def otherProfile(otherUsers):
         
                 username=g.username
                 search=otherUsers
-                print(search)
+                
                 con = sqlite3.connect('static/User.db')
                 completion = False
                 with con:
@@ -467,7 +463,7 @@ def otherProfile(otherUsers):
                         dfollowers = sfollowers[0]
 
                         
-                        print (dfollowers)
+                        
                         
                         find_following = ("SELECT * FROM USER WHERE USERNAME LIKE (?)")
                         c.execute(find_following, [search])
@@ -519,15 +515,15 @@ def searchProfile():
                                 followers = c.fetchall()
                                 sfollowers = followers[0]
                                 dfollowers = sfollowers[0]
-                                print(dfollowers)
                                 
                                 
-                                find_following = ("SELECT * FROM USER WHERE USERNAME LIKE (?)")
-                                c.execute(find_following, [username])
+                                
+                                findUser = ("SELECT * FROM USER WHERE USERNAME LIKE (?)")
+                                c.execute(findUser, [username])
                                 following = c.fetchall()
                                 sfollowing = following[0]
                                 dfollowing = sfollowing[0]
-                                print(dfollowing)
+                                
                                 profilePictures = ('SELECT url, username FROM PHOTO WHERE username LIKE (?) ORDER BY dateUploaded DESC' )
                                 c.execute(profilePictures, [search])
                                 url = c.fetchall()
@@ -538,20 +534,40 @@ def searchProfile():
                                 c.execute(countFollowers) 
                                 followers = c.fetchall()
                                 finalFollowers = followers[0]
-                                countfollowing = ("SELECT COUNT(follower_id) FROM relationships WHERE follower_id = %s" %dfollowing)
+                                countfollowing = ("SELECT COUNT(follower_id) FROM relationships WHERE follower_id = %s" %dfollowers)
                                 c.execute(countfollowing)  
                                 following = c.fetchall()
                                 finalFollowing = following[0]
-                                search_url = url_for('static', filename= 'profile/' + search +'.jpg')
-                                img_url = url_for('static', filename= 'profile/' + username+'.jpg')
-                                return render_template("searchProfile.html", followers=finalFollowers[0], following=finalFollowing[0], url=url, search_url=search_url, search=g.search, username=g.username)
-                                        
+
+                                
+                                findExsists = ("SELECT * FROM relationships WHERE followed_id = %s " %dfollowers)
+                                c.execute(findExsists)
+                                findUser = c.fetchall()
+                                               
+                                try:
+                                        exsistsResults = findUser[0]
+                                        checkResults = dfollowers
+                                        checkResult2 = "Yes"
+                                        if checkResults == exsistsResults[1] and checkResult2 == exsistsResults[2]:
+                                                
+                                                flash("your are following")
+                                                search_url = url_for('static', filename= 'profile/' + search +'.jpg')
+                                                img_url = url_for('static', filename= 'profile/' + username+'.jpg')
+                                                return render_template("follow.html", img_url= img_url, followers=finalFollowers[0], following=finalFollowing[0], url=url, search=g.search, username =g.username, search_url= search_url)
+                                        else:
+
+                                                search_url = url_for('static', filename= 'profile/' + search +'.jpg')
+                                                img_url = url_for('static', filename= 'profile/' + username+'.jpg')
+                                                return render_template("searchProfile.html", followers=finalFollowers[0], following=finalFollowing[0], url=url, search_url=search_url, search=g.search, username=g.username)
+                                except:
+                                        search_url = url_for('static', filename= 'profile/' + search +'.jpg')
+                                        img_url = url_for('static', filename= 'profile/' + username+'.jpg')
+                                        return render_template("searchProfile.html", followers=finalFollowers[0], following=finalFollowing[0], url=url, search_url=search_url, search=g.search, username=g.username)
                 else:   
                         error = 'Please sign in before accessing this page!'
                         return render_template('index.html', error=error)
-        error = 'Please sign in before accessing this page!'
-        return render_template('index.html', error=error)
-       
+        
+
 
 
 if __name__ == '__main__':
