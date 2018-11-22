@@ -17,22 +17,6 @@ photos = UploadSet('photos')
 app.config['UPLOADED_PHOTOS_DEST']= 'static'
 configure_uploads(app, photos)
 
-def check_password(self, password):
-    return bcrypt.check_password_hash(self.pw_hash, password)
-
-def validate(username, password):
-    con = sqlite3.connect('static/User.db')
-    completion = False
-    with con:
-                cur = con.cursor()
-                cur.execute("SELECT * FROM USER")
-                rows = cur.fetchall()
-                for row in rows:
-                    dbUser = row[0]
-                    dbPass = row[1]
-                    if dbUser==username:
-                        completion=check_password(dbPass, password)
-    return completion
 
 
 @app.errorhandler(404)
@@ -44,29 +28,22 @@ def page_not_found(e):
 def login():
         error = None
         if request.method == 'POST':
-                
                 username = request.form['username']
                 password = request.form['password']
-                
-                
                 con = sqlite3.connect('static/User.db')
                 completion = False
                 with con:
                         c = con.cursor()
-                        
                         find_user = ("SELECT * FROM USER WHERE USERNAME = ? ")
                         c.execute(find_user, [(username)])
-                        results = c.fetchall()
-                        print(results)
-                        userResults = results[0]
-                        print(userResults[2])
-                        
-                        if bcrypt.check_password_hash(userResults[2], password) :
-                        
+                        results = c.fetchall()                  
+                        try:
+                                userResults = results[0]
+                                results and bcrypt.check_password_hash(userResults[2], password) 
                                 session['logged_in'] = True
                                 session['username'] = username
                                 return redirect(url_for('homepage'))
-                        else:
+                        except Exception:
                                 error=("username and password not recognised")
                                 return render_template('login.html', error=error)
         print("username and password not recognised")
@@ -251,7 +228,7 @@ def homepage():
                         c = con.cursor()
                         c.execute('SELECT url, username FROM PHOTO ORDER BY dateUploaded DESC')
                         url = c.fetchall()
-                        print(url)
+                        
                         img_url = url_for('static', filename= 'profile/' + username+'.jpg')
                         return render_template("homepage.html", img_url=img_url, url=url, username=g.username)
                 img_url = url_for('static', filename= 'profile/' + username+'.jpg')
