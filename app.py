@@ -349,7 +349,10 @@ def follow():
                                 sfollowers = followers[0]
                                 dfollowers = sfollowers[0]
                                 
-                                
+                                profilePictures = ('SELECT url, username FROM PHOTO WHERE username LIKE (?) ORDER BY dateUploaded DESC' )
+                                c.execute(profilePictures, [search])
+                                url = c.fetchall()
+
                                 find_following = ("SELECT * FROM USER WHERE USERNAME LIKE (?)")
                                 c.execute(find_following, [username])
                                 following = c.fetchall()
@@ -376,7 +379,7 @@ def follow():
                                 search_url = url_for('static', filename= 'profile/' + search+'.jpg')
                                 
                                 
-                                return redirect(url_for('searchProfile', followers=finalFollowers[0], notifications=notifications ,following=finalFollowing[0], search_url=search_url, username=g.username))
+                                return render_template("follow.html", url=url, followers=finalFollowers[0], notifications=notifications ,following=finalFollowing[0], search_url=search_url, username=g.username)
                 else:   
                         error = 'Please sign in before accessing this page!'
                         return render_template('index.html', error=error)
@@ -540,16 +543,23 @@ def searchProfile():
                                 finalFollowing = following[0]
 
                                 
-                                findExsists = ("SELECT * FROM relationships WHERE followed_id = %s " %dfollowers)
-                                c.execute(findExsists)
+                                findExsists = ("SELECT * FROM relationships WHERE follower_id LIKE (?) AND followed_id LIKE (?) " )
+                                c.execute(findExsists, (dfollowing, dfollowers))
                                 findUser = c.fetchall()
+                                
+                                
                                                
                                 try:
                                         exsistsResults = findUser[0]
-                                        checkResults = dfollowers
+                                        print(exsistsResults)
+                                        checkResults = dfollowing
+                                        checkResults1 = dfollowers
                                         checkResult2 = "Yes"
-                                        if checkResults == exsistsResults[1] and checkResult2 == exsistsResults[2]:
-                                                
+                                        CheckR = (checkResults, checkResults1, checkResult2)
+                                        print(CheckR)
+                                
+                                        if  [exsistsResults] == [CheckR]:
+                                        
                                                 flash("your are following")
                                                 search_url = url_for('static', filename= 'profile/' + search +'.jpg')
                                                 img_url = url_for('static', filename= 'profile/' + username+'.jpg')
@@ -563,6 +573,7 @@ def searchProfile():
                                         search_url = url_for('static', filename= 'profile/' + search +'.jpg')
                                         img_url = url_for('static', filename= 'profile/' + username+'.jpg')
                                         return render_template("searchProfile.html", followers=finalFollowers[0], following=finalFollowing[0], url=url, search_url=search_url, search=g.search, username=g.username)
+                                
                 else:   
                         error = 'Please sign in before accessing this page!'
                         return render_template('index.html', error=error)
