@@ -4,6 +4,7 @@ import sqlite3
 import os
 from forms import UserSearchForm
 import hashlib
+from sqlite3 import IntegrityError
 from werkzeug.utils import secure_filename
 from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
 from flask_login import LoginManager
@@ -80,7 +81,6 @@ def register():
                 
                 pw_hash = bcrypt.generate_password_hash(signupPassword)
                 
-                filename= photos.save(request.files['profilephoto'], 'profile', signupUsername+'.jpg')
 
                 newEntry = [(signupUsername, pw_hash, 0 ,0 )]
               
@@ -88,14 +88,15 @@ def register():
                 completion = False
                 with con:
                         c = con.cursor()
-                        try:
+                        try:    
+                                filename= photos.save(request.files['profilephoto'], 'profile', signupUsername+'.jpg')
                                 sql = '''INSERT INTO USER (username, password, followers, following  ) VALUES(?, ?, ?, ?) '''
                                 c.executemany(sql, newEntry)
-                        except sqlite3.IntegrityError as e:
+                        except:
                                 error = 'This is already an account, please try again!'
                                 return render_template("signup.html", error=error)
                                 con.commit()
-                        return redirect(url_for('login'))
+                return redirect(url_for('login'))
                 
 
 @app.route('/notifications/')
@@ -163,10 +164,11 @@ def searchResults(search):
         error = None
         search_img = None
         results= []
-        search_string = search.data['search']
+        search_string= search.data['search']
         if g.username:
                 username=g.username
                 if request.method == 'POST':
+                        
                         
                         
                         con = sqlite3.connect('static/User.db')
@@ -368,12 +370,12 @@ def follow():
                                 giveNotification =("INSERT INTO notifications (  giver_id, receiver_id, noteType)  VALUES (?,?,?)")
                                 c.executemany(giveNotification, noteDriver)
                                 notifications = notifications +1
-                                countFollowers = ("SELECT COUNT(follower_id) FROM relationships WHERE follower_id = %s" %dfollowers)
-                                c.execute(countFollowers) 
+                                countFollowing = ("SELECT COUNT(follower_id) FROM relationships WHERE follower_id = %s" %dfollowers)
+                                c.execute(countFollowing) 
                                 followers = c.fetchall()
                                 finalFollowers = followers[0]   
-                                countfollowing = ("SELECT COUNT(followed_id) FROM relationships WHERE followed_id = %s" %dfollowers)
-                                c.execute(countfollowing)  
+                                countfollowers = ("SELECT COUNT(followed_id) FROM relationships WHERE followed_id = %s" %dfollowers)
+                                c.execute(countfollowers)  
                                 following = c.fetchall()
                                 finalFollowing = following[0]
                                 search_url = url_for('static', filename= 'profile/' + search+'.jpg')
