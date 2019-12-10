@@ -30,6 +30,6 @@ typed-ast==1.1.0
 
 var-dump==1.2
 virtualenv==16.0.0
-Werkzeug==0.14.1
+werkzeug>=0.15.3
 wrapt==1.10.11
 WTForms==2.2.1
